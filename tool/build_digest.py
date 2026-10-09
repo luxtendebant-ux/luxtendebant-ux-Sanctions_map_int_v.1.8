@@ -323,6 +323,7 @@ class Rules:
         self.pos = [re.compile(p, re.I) for p in ev["positive_patterns"]]
         self.neg = [re.compile(p, re.I) for p in ev["negative_patterns"]]
         self.watch = [re.compile(p) for p in cfg["watchlist"]["patterns"]]
+        self.watch_alone = bool(cfg["watchlist"].get("trigger_alone", False))
 
     def classify(self, card):
         """→ (это включение?, пояснение). Смотрим заголовок и метки карточки."""
@@ -436,7 +437,9 @@ def collect_events(data, cfg, rules, ledger, force=False):
             "verified_approx": bool(card.get("verifiedApprox")),
             "kind": kind, "backfill": bool(ch and ch.get("note")), "hits": hits,
             "payload": payload,
-            "watch_hash": hashlib.sha1("\n".join(sorted(hits)).encode("utf-8")).hexdigest()[:8] if hits else "",
+            # выдержки входят в ключ события, только если упоминание само вызывает выпуск
+            "watch_hash": (hashlib.sha1("\n".join(sorted(hits)).encode("utf-8")).hexdigest()[:8]
+                           if hits and rules.watch_alone else ""),
         }
         ev["key"] = event_key(ev)
 
@@ -445,7 +448,7 @@ def collect_events(data, cfg, rules, ledger, force=False):
             decision, reason = "skip", "в карточке стоит digest: false"
         elif forced:
             decision, reason = "key", "в карточке стоит отметка digest"
-        elif hits:
+        elif hits and rules.watch_alone:
             decision, reason = "key", "упомянуто наименование из списка наблюдения"
         elif g in rules.groups and is_incl and status_class == "in_force" and (kind == "new" or in_window):
             decision, reason = "key", why + ("; новая карточка" if kind == "new" else "; событие в периоде среза")

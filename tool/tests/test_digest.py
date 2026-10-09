@@ -82,6 +82,8 @@ class Classifier(unittest.TestCase):
                   "SDN-листинг двух компаний",
                   "ЕС: послы одобрили ≈1 650 новых назначений",
                   "Запрет распространён ещё на 33 российских кредитно-финансовых организации",
+                  "ЕС: транзакционный запрет на 11 крипто-платформ",
+                  "UK: в список внесены три СПГ-газовоза и 12 танкеров",
                   "Канада: санкции против 8 российских должностных лиц"]:
             self.check(t, True)
         self.check("Группа компаний — санкции за компоненты", True, tags=["Листинги"])
@@ -137,13 +139,33 @@ class Events(unittest.TestCase):
         key, up, other, log = self.run_collect([{"id": "uk", "title": "Великобритания", "items": [card(t)]}], [])
         self.assertEqual((key, up, other, log), ([], [], [], []))
 
-    def test_watchlist_mention_triggers_in_any_section(self):
-        t = "Экспортный контроль: уточнение порядка"
+    def test_watchlist_mention_alone_is_not_an_event(self):
+        # лицензия или новость с упоминанием ИНК дайджестом не становится
+        a = "OFSI: генеральная лицензия на сворачивание операций"
+        b = "Экспортный контроль: уточнение порядка"
         key, up, other, log = self.run_collect(
-            [], [ch("ec-us", t, kind="upd", group="EXPORT_CONTROL")],
-            export=[{"id": "ec-us", "title": "США", "items": [card(t, desc="Мера затрагивает АО «ИНК-Капитал».")]}])
+            [{"id": "uk", "title": "Великобритания", "items": [card(a, desc="Лицензия касается АО «ИНК-Капитал».")]}],
+            [ch("uk", a), ch("ec-us", b, kind="upd", group="EXPORT_CONTROL")],
+            export=[{"id": "ec-us", "title": "США", "items": [card(b, desc="Мера затрагивает АО «ИНК-Капитал».")]}])
+        self.assertEqual(key, [])
+        self.assertEqual(len(other), 2)
+
+    def test_inclusion_with_watchlist_mention_is_marked(self):
+        t = "UK: 12 новых позиций — нефтяные компании"
+        key, up, other, log = self.run_collect(
+            [{"id": "uk", "title": "Великобритания", "items": [card(t, desc="В пакете АО «ИНК-Капитал».")]}], [ch("uk", t)])
         self.assertEqual(len(key), 1)
         self.assertTrue(key[0]["hits"])
+        self.assertTrue(bd.file_name(CFG, key, bd.parse_ru_date("09.10.2026"), None, set()).endswith("_INK.pdf"))
+
+    def test_watchlist_can_trigger_alone_when_enabled(self):
+        cfg = json.loads(json.dumps(CFG))
+        cfg["watchlist"]["trigger_alone"] = True
+        t = "Экспортный контроль: уточнение порядка"
+        p = write_map(make_map([], [ch("ec-us", t, kind="upd", group="EXPORT_CONTROL")],
+                               export=[{"id": "ec-us", "title": "США", "items": [card(t, desc="Мера затрагивает АО «ИНК-Капитал».")]}]))
+        key, up, other, log = bd.collect_events(bd.read_map(p), cfg, bd.Rules(cfg), {"events": {}, "digests": []})
+        self.assertEqual(len(key), 1)
 
     def test_watchlist_does_not_match_inside_other_words(self):
         rules = bd.Rules(CFG)
@@ -176,13 +198,13 @@ class Events(unittest.TestCase):
         k2, *_ = self.run_collect([{"id": "uk", "title": "Великобритания", "items": [b]}], [ch("uk", b["title"])])
         self.assertEqual(k1[0]["key"], k2[0]["key"])
 
-    def test_new_watchlist_sentence_makes_new_event(self):
+    def test_later_note_about_watchlist_name_does_not_reissue(self):
         base = "UK: 12 новых позиций"
         a = card(base, desc="В пакете АО «ИНК-Капитал».")
         b = card(base, desc="В пакете АО «ИНК-Капитал».", detail="ОБНОВЛЕНИЕ 12.10.2026: выпущена лицензия по АО «ИНК-Капитал».")
         k1, *_ = self.run_collect([{"id": "uk", "title": "Великобритания", "items": [a]}], [ch("uk", base)])
         k2, *_ = self.run_collect([{"id": "uk", "title": "Великобритания", "items": [b]}], [ch("uk", base, kind="upd")])
-        self.assertNotEqual(k1[0]["key"], k2[0]["key"])
+        self.assertEqual(k1[0]["key"], k2[0]["key"])
 
 
 class Text(unittest.TestCase):
