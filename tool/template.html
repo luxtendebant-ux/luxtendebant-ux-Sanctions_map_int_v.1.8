@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Санкционный дайджест</title>
+<style>
+@font-face{font-family:"Inter";font-weight:400;font-style:normal;src:url("{{FONT_REGULAR}}") format("woff2");}
+@font-face{font-family:"Inter";font-weight:400;font-style:italic;src:url("{{FONT_ITALIC}}") format("woff2");}
+@font-face{font-family:"Inter";font-weight:600;font-style:normal;src:url("{{FONT_SEMIBOLD}}") format("woff2");}
+@font-face{font-family:"Inter";font-weight:700;font-style:normal;src:url("{{FONT_BOLD}}") format("woff2");}
+@page{size:13.3333in 7.5in;margin:0;}
+:root{
+  --petrol:#104e4d; --petrol-l:#105453; --petrol-d:#0e4645;
+  --ink:#1c5446; --muted:#6f8580; --rule:#d5e0de; --tint:#eef4f3; --accent:#b3261e;
+}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+html,body{margin:0;padding:0;background:#fff;}
+body{font-family:"Inter","Liberation Sans","DejaVu Sans",Arial,sans-serif;font-size:18px;line-height:1.3;color:var(--ink);
+  font-feature-settings:"tnum" 0;-webkit-font-smoothing:antialiased;}
+.slide{width:1280px;height:720px;position:relative;overflow:hidden;break-after:page;page-break-after:always;background:#fff;}
+.slide:last-child{break-after:auto;page-break-after:auto;}
+
+/* общий верхний колонтитул тёмных слайдов */
+.auto{font-size:10px;line-height:1.4;color:#e6efee;}
+.auto b{font-weight:400;display:block;}
+.auto a{color:inherit;text-decoration:none;font-size:9px;}
+.conf{position:absolute;right:20px;bottom:24px;font-size:11px;font-weight:700;color:#c5cccb;}
+.dark .conf{color:#d9e4e3;}
+
+/* титул */
+.dark{background:
+  radial-gradient(120% 140% at 85% 20%, #11605d 0%, rgba(17,96,93,0) 55%),
+  linear-gradient(115deg,#0d4444 0%,#104e4d 45%,#0f5553 100%);color:#fff;}
+.title .auto{position:absolute;left:130px;top:14px;}
+.title .capsule{position:absolute;right:0;top:8px;height:64px;padding:0 26px 0 34px;display:flex;align-items:center;
+  background:#fff;color:var(--petrol);font-weight:700;font-size:21px;border-radius:34px 0 0 34px;white-space:nowrap;}
+.title .unit{position:absolute;left:132px;top:54px;font-size:20px;font-weight:700;}
+.title .logo{position:absolute;left:132px;top:140px;height:134px;}
+.title .descr{position:absolute;left:130px;top:338px;width:1010px;font-size:15px;line-height:1.35;}
+.title h1{position:absolute;left:130px;top:452px;margin:0;font-size:46px;line-height:1.1;font-weight:700;letter-spacing:-0.2px;}
+.title .acts{position:absolute;left:130px;top:522px;width:1040px;font-size:15px;line-height:1.35;}
+
+/* разделитель и заключительный слайд */
+.split .left{position:absolute;left:0;top:0;bottom:0;width:706px;}
+.split .photo{position:absolute;left:706px;right:0;top:0;bottom:0;background-size:cover;background-position:center 40%;}
+.split .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,36,36,.05),rgba(8,36,36,.35));}
+.split .auto{position:absolute;left:130px;top:14px;}
+.split .logo{position:absolute;left:132px;top:140px;height:134px;}
+.split h2{position:absolute;left:136px;top:430px;width:540px;margin:0;font-size:42px;line-height:1.12;font-weight:700;}
+.split .sub{position:absolute;left:138px;top:556px;width:540px;font-size:17px;color:#dbe8e7;}
+.split .qr{position:absolute;right:44px;top:40px;width:168px;z-index:2;text-align:right;}
+.split .qr img{width:168px;height:168px;display:block;border-radius:4px;}
+.split .qr .cap{margin-top:10px;font-size:13px;font-weight:700;color:#fff;}
+.split .qr .capsub{font-size:11px;color:#e3eeed;}
+.split .conf{z-index:2;}
+.final .contact{position:absolute;left:54px;top:512px;width:620px;font-size:16px;line-height:1.35;}
+.final .contact b{display:block;font-weight:700;}
+.final .confb{position:absolute;left:54px;top:610px;font-size:14px;font-weight:700;}
+
+/* содержательный слайд */
+.band{position:absolute;left:0;top:0;right:0;height:72px;border-radius:0 0 28px 28px;
+  background:linear-gradient(90deg,#0e494a 0%,#104e4d 55%,#105453 100%);display:flex;align-items:center;padding:0 18px 0 16px;color:#fff;}
+.band .logo{height:50px;flex:none;margin-right:16px;}
+.band .ttl{flex:1;font-size:20px;line-height:1.2;font-weight:700;padding-right:20px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.band .auto{flex:none;width:400px;text-align:right;font-size:9.5px;}
+.body{position:absolute;left:24px;right:30px;top:98px;bottom:60px;overflow:hidden;}
+.pg{position:absolute;left:24px;bottom:24px;font-size:11px;color:#9fb0ad;}
+
+.body p{margin:0 0 9px 0;}
+.body h3{margin:12px 0 5px 0;font-size:18px;line-height:1.25;font-weight:700;text-decoration:underline;text-underline-offset:3px;
+  text-decoration-thickness:1.5px;text-decoration-skip-ink:none;color:var(--ink);}
+.body > h3:first-child{margin-top:0;}
+.body ul,.body ol{margin:0 0 8px 0;padding:0;list-style:none;}
+.body li{position:relative;padding-left:24px;margin:0 0 4px 0;}
+.body ul li::before{content:"";position:absolute;left:3px;top:6px;width:13px;height:11px;
+  background:no-repeat center/contain url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13 11'><path d='M1 1l10.5 4.5L1 10l3-4.5z' fill='none' stroke='%231c5446' stroke-width='1.2' stroke-linejoin='round'/></svg>");}
+.body ol li{padding-left:30px;}
+.body ol li::before{content:attr(data-n) ".";position:absolute;left:0;top:0;width:24px;text-align:right;}
+.body .note{font-style:italic;color:var(--muted);font-size:15.5px;margin:0 0 9px 0;}
+.body .callout{margin:4px 0 10px 0;padding:10px 14px;background:var(--tint);border-left:4px solid var(--petrol);border-radius:0 6px 6px 0;}
+.body .callout .lab{display:block;font-weight:700;margin-bottom:3px;}
+.body .src{font-size:14px;margin:-4px 0 9px 0;word-break:break-all;}
+.body .src a{color:#1a6a8c;text-decoration:underline;}
+.nologo{display:none;}
+.split .photo.nophoto{background:linear-gradient(160deg,#16605d 0%,#0c3f3f 60%,#0a3232 100%);}
+.overflow-mark{position:absolute;left:0;right:0;bottom:0;height:8px;background:#b3261e;}
+</style>
+</head>
+<body>
+<script id="model" type="application/json">{{MODEL_JSON}}</script>
+<script>
+(function(){
+  "use strict";
+  var M = JSON.parse(document.getElementById("model").textContent);
+  var LOGO = "{{IMG_LOGO}}", PHOTO = "{{IMG_PHOTO}}";
+  var overflow = 0;
+
+  function el(tag, cls, text){
+    var e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(text != null) e.textContent = text;
+    return e;
+  }
+  function autoBlock(){
+    var a = el("div","auto");
+    a.appendChild(el("b",null,M.meta.header));
+    var l = el("a",null,M.meta.map_url); l.href = M.meta.map_href; a.appendChild(l);
+    return a;
+  }
+  function logo(){
+    if(!LOGO) return el("span","logo nologo");
+    var i = el("img","logo"); i.src = LOGO; i.alt = ""; return i;
+  }
+  function add(s){ document.body.appendChild(s); return s; }
+
+  function titleSlide(sl){
+    var s = el("section","slide dark title");
+    s.appendChild(autoBlock());
+    s.appendChild(el("div","capsule",M.meta.capsule));
+    s.appendChild(el("div","unit",M.meta.unit));
+    s.appendChild(logo());
+    s.appendChild(el("div","descr",sl.description));
+    s.appendChild(el("h1",null,M.meta.digest_title));
+    s.appendChild(el("div","acts",sl.acts));
+    s.appendChild(el("div","conf",M.meta.confidential));
+    add(s);
+    fitText(s.querySelector(".descr"), 96, 15, 12);
+    fitText(s.querySelector(".acts"), 150, 15, 12);
+  }
+  function splitBase(cls){
+    var s = el("section","slide dark split " + (cls||""));
+    var left = el("div","left");
+    left.appendChild(autoBlock());
+    left.appendChild(logo());
+    s.appendChild(left);
+    var ph = el("div","photo" + (PHOTO ? "" : " nophoto"));
+    if(PHOTO) ph.style.backgroundImage = "url('" + PHOTO + "')";
+    s.appendChild(ph);
+    s.appendChild(el("div","conf",M.meta.confidential));
+    return s;
+  }
+  function dividerSlide(sl){
+    var s = splitBase();
+    var left = s.querySelector(".left");
+    var h = el("h2",null,sl.title); left.appendChild(h);
+    if(sl.sub) left.appendChild(el("div","sub",sl.sub));
+    if(sl.qr){
+      var q = el("div","qr"); var i = el("img"); i.src = sl.qr; i.alt = "QR"; q.appendChild(i);
+      if(sl.qr_caption) q.appendChild(el("div","cap",sl.qr_caption));
+      if(sl.qr_sub) q.appendChild(el("div","capsub",sl.qr_sub));
+      s.appendChild(q);
+    }
+    add(s);
+    // длинное название раздела: уменьшаем кегль и поднимаем, чтобы не наехало на подпись
+    var size = 42;
+    while(h.scrollHeight > 112 && size > 26){ size -= 2; h.style.fontSize = size + "px"; }
+    h.style.top = (540 - h.offsetHeight) + "px";
+  }
+  function finalSlide(){
+    var s = splitBase("final");
+    var left = s.querySelector(".left");
+    var c = el("div","contact"); c.appendChild(document.createTextNode(M.meta.contact_text));
+    c.appendChild(el("b",null,M.meta.contact_email)); left.appendChild(c);
+    left.appendChild(el("div","confb",M.meta.confidential.replace(/\.$/,"")));
+    add(s);
+  }
+  function fitText(node, maxH, size, min){
+    while(node.scrollHeight > maxH && size > min){ size -= 0.5; node.style.fontSize = size + "px"; }
+  }
+
+  function contentBase(title){
+    var s = el("section","slide content");
+    var band = el("div","band");
+    band.appendChild(logo());
+    band.appendChild(el("div","ttl",title));
+    band.appendChild(autoBlock());
+    s.appendChild(band);
+    var body = el("div","body"); s.appendChild(body);
+    s.appendChild(el("div","conf",M.meta.confidential));
+    s.appendChild(el("div","pg"));
+    add(s);
+    return body;
+  }
+  function fits(body){ return body.scrollHeight <= body.clientHeight + 1; }
+
+  function unitNode(u){
+    if(u.t === "h") return el("h3",null,u.text);
+    if(u.t === "note") return el("p","note",u.text);
+    if(u.t === "callout"){
+      var c = el("div","callout");
+      if(u.label) c.appendChild(el("span","lab",u.label));
+      c.appendChild(document.createTextNode(u.text));
+      return c;
+    }
+    if(u.t === "src"){
+      var p = el("p","src"); var a = el("a",null,u.text); a.href = u.url; p.appendChild(a); return p;
+    }
+    if(u.t === "li"){
+      var li = el("li",null,u.text);
+      if(u.ordered) li.setAttribute("data-n", String(u.n));
+      return li;
+    }
+    return el("p",null,u.text);
+  }
+  // Кладёт единицу в тело слайда; пункты списка собираются в один ul/ol.
+  function place(body, u, node){
+    if(u.t !== "li"){ body.appendChild(node); return node; }
+    var tag = u.ordered ? "OL" : "UL", last = body.lastElementChild;
+    if(!last || last.tagName !== tag){ last = el(tag.toLowerCase()); body.appendChild(last); }
+    last.appendChild(node);
+    return node;
+  }
+  function unplace(body, node){
+    var parent = node.parentNode;
+    if(!parent) return;
+    parent.removeChild(node);
+    if(parent !== body && !parent.firstChild) body.removeChild(parent);
+  }
+  function markOverflow(body){ overflow++; body.parentNode.appendChild(el("div","overflow-mark")); }
+
+  // Пробует положить группу целиком. Не поместилась — убирает за собой и возвращает false.
+  function tryGroup(body, group){
+    var nodes = [];
+    for(var i = 0; i < group.length; i++){
+      nodes.push(place(body, group[i], unitNode(group[i])));
+      if(!fits(body)){ nodes.forEach(function(n){ unplace(body, n); }); return false; }
+    }
+    return true;
+  }
+  // Раскладывает группу с переносом на следующие слайды по месту переполнения.
+  function flow(body, group, title){
+    for(var i = 0; i < group.length; i++){
+      var u = group[i], node = unitNode(u);
+      place(body, u, node);
+      if(fits(body)) continue;
+      unplace(body, node);
+      var carry = null;                       // заголовок не остаётся внизу слайда без текста
+      if(i > 0 && group[i-1].t === "h" && body.lastElementChild && body.lastElementChild.tagName === "H3"){
+        carry = body.lastElementChild; body.removeChild(carry);
+      }
+      if(!body.firstChild && !carry){          // не помещается даже на пустом слайде — ошибка вёрстки
+        place(body, u, node); markOverflow(body); continue;
+      }
+      body = contentBase(title);
+      if(carry) body.appendChild(carry);
+      place(body, u, node);
+      if(!fits(body)) markOverflow(body);
+    }
+    return body;
+  }
+  function dropSlide(body){ var s = body.parentNode; s.parentNode.removeChild(s); }
+
+  function contentSlides(sl){
+    var units = sl.units || [], groups = [], cur = [];
+    units.forEach(function(u){
+      if(u.t === "h" && cur.length){ groups.push(cur); cur = []; }
+      cur.push(u);
+    });
+    if(cur.length) groups.push(cur);
+    var body = contentBase(sl.title);
+    groups.forEach(function(g){
+      if(tryGroup(body, g)) return;            // блок поместился целиком
+      if(!body.firstChild){ body = flow(body, g, sl.title); return; }
+      var fresh = contentBase(sl.title);        // блок под заголовком не разрываем, если он входит на один слайд
+      if(tryGroup(fresh, g)){ body = fresh; return; }
+      dropSlide(fresh);
+      body = flow(body, g, sl.title);
+    });
+  }
+
+  function build(){
+    M.slides.forEach(function(sl){
+      if(sl.type === "title") titleSlide(sl);
+      else if(sl.type === "divider") dividerSlide(sl);
+      else if(sl.type === "final") finalSlide();
+      else contentSlides(sl);
+    });
+    var n = 0;
+    [].forEach.call(document.querySelectorAll(".slide"), function(s){
+      n++; var pg = s.querySelector(".pg"); if(pg) pg.textContent = String(n);
+    });
+    var root = document.documentElement;
+    root.setAttribute("data-slides", String(document.querySelectorAll(".slide").length));
+    root.setAttribute("data-overflow", String(overflow));
+    root.setAttribute("data-ready", "1");
+  }
+  function start(){
+    var want = ["400 18px Inter","italic 400 18px Inter","600 18px Inter","700 18px Inter"];
+    Promise.all(want.map(function(f){ return document.fonts.load(f, "АаBb"); }))
+      .then(function(){ return document.fonts.ready; })
+      .then(build, build);
+  }
+  if(document.readyState === "complete") start(); else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>
