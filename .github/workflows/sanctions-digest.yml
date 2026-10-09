@@ -1,0 +1,107 @@
+# Автоматический выпуск санкционного дайджеста.
+# Срабатывает, когда в ветку main попадает новый срез карты (index.html), и собирает PDF
+# только из данных самой карты. Инструмент, журнал и готовые файлы лежат в ветке digests —
+# в main, кроме этого файла, ничего не добавляется.
+name: Санкционный дайджест
+
+on:
+  push:
+    branches: [main]
+    paths: [index.html]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "normal — обычный выпуск; dry-run — только показать решения; force — выпустить текущий срез заново"
+        type: choice
+        default: normal
+        options: [normal, dry-run, force]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sanctions-digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Карта (main)
+        uses: actions/checkout@v4
+        with:
+          path: map
+
+      - name: Инструмент и журнал (digests)
+        uses: actions/checkout@v4
+        with:
+          ref: digests
+          path: digests
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Зависимости
+        run: |
+          pip install --quiet -r digests/tool/requirements.txt
+          google-chrome --version
+
+      - name: Самопроверка инструмента
+        run: |
+          python -m unittest discover -s digests/tool/tests
+          python digests/tool/build_digest.py --selftest
+
+      - name: Сборка дайджеста
+        id: build
+        env:
+          MODE: ${{ inputs.mode }}
+          DIGEST_PDF_PASSWORD: ${{ secrets.DIGEST_PDF_PASSWORD }}
+        run: |
+          ARGS=""
+          if [ "$MODE" = "dry-run" ]; then ARGS="--dry-run"; fi
+          if [ "$MODE" = "force" ]; then ARGS="--force"; fi
+          set +e
+          python digests/tool/build_digest.py \
+            --map map/index.html \
+            --state digests/ledger.json \
+            --out digests/out \
+            --readme digests/README.md \
+            --report "$RUNNER_TEMP/report.md" \
+            --notes "$RUNNER_TEMP/notes.md" $ARGS
+          CODE=$?
+          set -e
+          if [ -f "$RUNNER_TEMP/report.md" ]; then cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"; fi
+          exit $CODE
+
+      - name: Публикация в ветке digests
+        if: steps.build.outputs.released == 'true'
+        working-directory: digests
+        env:
+          FILE: ${{ steps.build.outputs.file }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add out ledger.json README.md
+          git commit -m "Дайджест: $FILE"
+          git push origin HEAD:digests
+
+      - name: Выпуск (страница Releases и уведомление подписчикам)
+        if: steps.build.outputs.released == 'true'
+        working-directory: digests
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FILE: ${{ steps.build.outputs.file }}
+        run: |
+          TAG="digest-$(date -u +%Y%m%d-%H%M%S)"
+          gh release create "$TAG" "out/$FILE" \
+            --target digests \
+            --title "${FILE%.pdf}" \
+            --notes-file "$RUNNER_TEMP/notes.md"
+
+      - name: Пароль не задан — выпуск остановлен
+        if: steps.build.outputs.blocked == 'true'
+        run: |
+          echo "::error::Найдены ключевые события, но дайджест не выпущен: не задан секрет DIGEST_PDF_PASSWORD."
+          exit 1
