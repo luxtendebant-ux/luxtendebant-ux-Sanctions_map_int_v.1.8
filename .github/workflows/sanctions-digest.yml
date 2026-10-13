@@ -29,17 +29,17 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Карта (main)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: map
 
       - name: Инструмент и журнал (digests)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: digests
           path: digests
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -103,5 +103,5 @@ jobs:
       - name: Пароль не задан — выпуск остановлен
         if: steps.build.outputs.blocked == 'true'
         run: |
-          echo "::error::Найдены ключевые события, но дайджест не выпущен: не задан секрет DIGEST_PDF_PASSWORD."
+          echo "::error::Найдены ключевые события, но дайджест не выпущен: не задан секрет DIGEST_PDF_PASSWORD. Задайте его: Settings → Secrets and variables → Actions → New repository secret; затем Actions → «Санкционный дайджест» → Run workflow (режим normal). Пропущенные события войдут в ближайший выпуск: журнал при остановке не меняется."
           exit 1
