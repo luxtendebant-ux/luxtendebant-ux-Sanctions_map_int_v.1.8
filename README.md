@@ -1,5 +1,7 @@
 # Санкционный дайджест — автоматический выпуск
 
+> **Архив.** С 16.11.2026 автоматический выпуск по карте v.1.8 отключён (служебный файл запуска удалён из `main`). Дайджесты выпускаются по [Комплаенс-карте 2.0](https://luxtendebant-ux.github.io/Sanctions_map_v.2.0/) — ветка `digests` репозитория [Sanctions_map_v.2.0](https://github.com/luxtendebant-ux/Sanctions_map_v.2.0/tree/digests). Файлы ниже сохранены без изменений.
+
 Эта ветка обслуживает [Комплаенс-карту](https://luxtendebant-ux.github.io/luxtendebant-ux-Sanctions_map_int_v.1.8/). Здесь лежат инструмент сборки, журнал выпусков и готовые PDF. В ветке `main` по-прежнему один файл карты — `index.html` (плюс служебный файл запуска в `.github/workflows`).
 
 ## Как это работает
